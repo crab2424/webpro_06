@@ -1,0 +1,141 @@
+{
+  "$schema": "https://bendera.github.io/vscode-commit-message-editor/schemas/config-v1.schema.json",
+  "configVersion": "1",
+
+  "staticTemplate": [
+    "feat(parser): タイトル",
+    "",
+    "本文（詳細）",
+    "",
+    "チケット／備考"
+  ],
+
+  "dynamicTemplate": [
+    "{type}{scope}: {description}",
+    "",
+    "{body}",
+    "",
+    "{breaking_change}",
+    "{footer}"
+  ],
+
+  "tokens": [
+    {
+      "label": "種類",
+      "name": "type",
+      "type": "enum",
+      "description": "変更の種類を選択してください",
+      "options": [
+        { "label": "— 選択してください —", "value": "" },
+        {
+          "label": "機能追加 (feat)",
+          "value": "feat",
+          "description": "新しい機能の追加"
+        },
+        {
+          "label": "バグ修正 (fix)",
+          "value": "fix",
+          "description": "バグ修正"
+        },
+        {
+          "label": "ドキュメント (docs)",
+          "value": "docs",
+          "description": "ドキュメントのみの変更"
+        },
+        {
+          "label": "リファクタ (refactor)",
+          "value": "refactor",
+          "description": "機能追加・バグ修正以外のコード変更"
+        },
+        {
+          "label": "スタイル (style)",
+          "value": "style",
+          "description": "コードの意味に影響しない変更 (空白・フォーマットなど)"
+        },
+        {
+          "label": "雑務 (chore)",
+          "value": "chore",
+          "description": "コードに影響しないタスク (設定更新など)"
+        },
+        {
+          "label": "テスト (test)",
+          "value": "test",
+          "description": "テスト追加・既存テスト修正"
+        },
+        {
+          "label": "性能改善 (perf)",
+          "value": "perf",
+          "description": "パフォーマンス向上のための変更"
+        },
+        {
+          "label": "ビルド (build)",
+          "value": "build",
+          "description": "ビルドシステムや外部依存の変更 (例: gulp, npm)"
+        },
+        {
+          "label": "CI 設定 (ci)",
+          "value": "ci",
+          "description": "CI 設定ファイルやスクリプトの変更"
+        },
+        {
+          "label": "リバート (revert)",
+          "value": "revert",
+          "description": "変更を取り消して元の状態に戻す"
+        },
+        {
+          "label": "作業途中 (wip)",
+          "value": "wip",
+          "description": "Work in progress — 途中経過コミット"
+        }
+      ]
+    },
+
+    {
+      "label": "範囲 (scope)",
+      "name": "scope",
+      "type": "text",
+      "multiline": false,
+      "prefix": "(",
+      "suffix": ")",
+      "placeholder": "parser",
+      "description": "変更対象モジュールなど（任意）"
+    },
+
+    {
+      "label": "タイトル",
+      "name": "description",
+      "type": "text",
+      "multiline": false,
+      "placeholder": "50 字以内で要約",
+      "description": "コミットのタイトル行（50 字以内推奨）"
+    },
+
+    {
+      "label": "本文（詳細）",
+      "name": "body",
+      "type": "text",
+      "multiline": true,
+      "lines": 5,
+      "maxLines": 10,
+      "description": "変更理由や背景など（任意）"
+    },
+
+    {
+      "label": "破壊的変更あり",
+      "name": "breaking_change",
+      "type": "boolean",
+      "value": "BREAKING CHANGE: ",
+      "default": false
+    },
+
+    {
+      "label": "チケット／備考",
+      "name": "footer",
+      "type": "text",
+      "multiline": true,
+      "lines": 1,
+      "placeholder": "JIRA-1234 など",
+      "description": "関連チケット ID や備考（任意）"
+    }
+  ]
+}
