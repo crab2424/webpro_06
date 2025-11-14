@@ -1,10 +1,19 @@
 # webpro_06のページ遷移図
 
+
+1.　都道府県 <br>
+2.<br>
+3.<br>
+
 ```mermaid
 stateDiagram-v2
 
-[*] --> /public/janken.html
-/public/janken.html --> /janken:手を選択(1)
-/janken --> /janken:手を選択(2)
+
+1:都道府県
+
+[*]-->1
+[*]-->2
+[*]-->3
+
 ```
 
