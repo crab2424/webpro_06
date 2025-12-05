@@ -1,0 +1,200 @@
+\documentclass[a4paper,12pt,oneside]{ltjsarticle}
+\usepackage{lmodern}
+\usepackage{listings} % コード表示用
+\usepackage{longtable} % ページをまたぐ表用
+\usepackage{color}
+\usepackage{graphicx}% 画像読み込み用
+\usepackage{xcolor}
+\usepackage[cmex10]{amsmath}
+\usepackage[hyphens]{url}
+\usepackage{float}
+\usepackage{moreverb}
+\usepackage{lscape}
+\usepackage{cite}
+\usepackage{ascmac}
+\usepackage{amssymb}
+\usepackage{colortbl}
+\usepackage{float}
+\usepackage{textcomp}
+\usepackage{multirow,multicol}
+\usepackage{wrapfig}
+\usepackage{minted}
+
+
+\lstdefinelanguage{JavaScript}{
+  keywords={typeof, new, true, false, catch, function, return, null, catch,
+    switch, var, let, const, if, while, do, else, case, break},
+  keywordstyle=\color{blue}\bfseries,
+  ndkeywords={class, export, boolean, throw, implements, import, this},
+  ndkeywordstyle=\color{teal}\bfseries,
+  identifierstyle=\color{black},
+  sensitive=false,
+  comment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  commentstyle=\color{gray}\ttfamily,
+  stringstyle=\color{orange}\ttfamily,
+  morestring=[b]',
+  morestring=[b]"
+}
+
+% --- コードハイライト設定 ---
+\definecolor{commentgreen}{rgb}{0,0.6,0}
+\definecolor{stringpurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstset{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{commentgreen},
+    keywordstyle=\color{blue},
+    stringstyle=\color{stringpurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2,
+    frame=single,
+    language=JavaScript
+}
+
+
+
+% --- タイトル情報 ---
+\title{開発者向け仕様書}
+\author{開発チーム}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+\section{システム概要}
+本システムは、Node.js (Express) を用いたサーバーサイドレンダリング (SSR) Webアプリケーションである。
+3つの異なるデータセット（都道府県、元素記号、88星座）に対し、RESTfulな設計に基づいたCRUD（作成、読み取り、更新、削除）機能を提供する。
+
+\subsection{特徴と制約}
+\begin{itemize}
+    \item \textbf{データ永続化なし}: データベースを使用せず、\textbf{サーバーサイドの変数（メモリ上の配列）}にデータを保持する。サーバーを再起動すると、データは初期状態にリセットされる。
+    \item \textbf{テンプレートエンジン}: EJSを使用し、HTMLを動的に生成する。
+    \item \textbf{拡張性}: ルーティングとビューを追加することで、容易に新しいテーマ（例：商品管理、書籍リストなど）を追加可能である。
+\end{itemize}
+
+\section{アーキテクチャ構成}
+システムはMVC（Model-View-Controller）モデルに近い構成をとるが、簡易化のためModel部分は変数操作として実装する。
+
+\subsection{ディレクトリ構成案}
+開発者が直感的にファイルを配置できるよう、以下の構成を推奨する。
+
+\begin{lstlisting}[caption=ディレクトリ構成, language=bash]
+root/
+|-- app.js                # エントリーポイント
+|-- routes/               # ルーティング定義 (Controller相当)
+|   |-- prefectures.js    # 都道府県用ルーター
+|   |-- elements.js       # 元素記号用ルーター
+|   `-- constellations.js # 88星座用ルーター
+|-- views/                # EJSテンプレート (View)
+|   |-- index.ejs         # トップページ
+|   |-- prefectures/      # 都道府県用ビューフォルダ
+|   |   |-- index.ejs     # 一覧表示
+|   |   |-- show.ejs      # 詳細表示
+|   |   |-- new.ejs       # 新規作成フォーム
+|   |   `-- edit.ejs      # 編集フォーム
+|   |-- elements/         # (構成は同上)
+|   `-- constellations/   # (構成は同上)
+|-- public/               # 静的ファイル (css, images)
+`-- package.json          # 依存関係定義
+\end{lstlisting}
+
+\section{データモデル仕様 (Model)}
+データは各ルーターファイル（例: \texttt{routes/prefectures.js}）内のローカル変数として定義する。
+
+\subsection{変数定義のルール}
+\begin{itemize}
+    \item \textbf{型}: オブジェクトの配列 (\texttt{Array<Object>})
+    \item \textbf{初期データ}: サーバー起動時に配列に格納されるデフォルトデータ。
+    \item \textbf{ID管理}: 新規追加時は、既存の最大ID + 1 を付与するか、単純なインクリメントロジックを実装する。
+\end{itemize}
+
+\begin{lstlisting}[caption=routes/prefectures.js の実装例]
+// データストア（変数）
+let prefectures = [
+    { id: 1, name: '北海道', region: '北海道', capital: '札幌市' },
+    { id: 2, name: '青森県', region: '東北', capital: '青森市' },
+    // ...初期データ
+];
+
+// 次のIDを管理する変数
+let nextId = 48;
+\end{lstlisting}
+
+\section{APIエンドポイントと処理フロー}
+
+\subsection{実装すべきルート処理詳細}
+各テーマ共通で実装するURLパターンと処理内容は以下の通りである。
+
+\begin{longtable}{|l|c|p{8cm}|}
+\hline
+\textbf{URLパターン} & \textbf{メソッド} & \textbf{処理概要と注意点} \\
+\hline
+\endhead
+
+\texttt{/} & GET & \textbf{一覧表示} \newline 配列全体を \texttt{views/index.ejs} に渡す。 \\
+\hline
+\texttt{/new} & GET & \textbf{新規作成画面} \newline 空のフォームを表示する。 \\
+\hline
+\texttt{/} & POST & \textbf{データ作成} \newline \texttt{req.body}から値を取得し、IDを付与して配列に\texttt{push}する。その後一覧へリダイレクト。 \\
+\hline
+\texttt{/:id} & GET & \textbf{詳細表示} \newline \texttt{req.params.id}と一致する要素を配列から\texttt{find}で検索し表示。見つからない場合は404。 \\
+\hline
+\texttt{/:id/edit} & GET & \textbf{編集画面} \newline 対象データを検索し、フォームの初期値(\texttt{value})として渡して表示。 \\
+\hline
+\texttt{/:id} & POST & \textbf{データ更新} \newline 対象データを検索し、\texttt{req.body}の内容でプロパティを上書きする。 \\
+\hline
+\texttt{/:id/delete} & POST & \textbf{データ削除} \newline \texttt{req.params.id}と一致する要素を配列から除外(\texttt{filter}等)する。 \\
+\hline
+\end{longtable}
+
+\section{拡張・変更ガイド}
+
+\subsection{ケースA：データの項目を増やしたい}
+例：都道府県に「名産品 (\texttt{product})」を追加する場合。
+
+\begin{enumerate}
+    \item \textbf{データの変更}: \texttt{routes/prefectures.js} の初期データ配列に \texttt{product} プロパティを追加する。
+    \item \textbf{新規作成処理の変更}: 同ファイルの \texttt{POST /} ルート内で、\texttt{req.body.product} を受け取るように修正する。
+    \item \textbf{更新処理の変更}: 同ファイルの \texttt{POST /:id} ルート内で、更新ロジックに \texttt{product} を追加する。
+    \item \textbf{ビューの変更}:
+    \begin{itemize}
+        \item \texttt{index.ejs}: 表に見出しと列を追加。
+        \item \texttt{show.ejs}: 表示項目を追加。
+        \item \texttt{new.ejs} / \texttt{edit.ejs}: \texttt{<input name="product">} タグを追加。
+    \end{itemize}
+\end{enumerate}
+
+\subsection{ケースB：新しいテーマ（例：戦国武将）を追加したい}
+\begin{enumerate}
+    \item \textbf{ルーター作成}: \texttt{routes/warriors.js} を作成し、CRUDルートとデータ配列（\texttt{warriors}）を記述する。
+    \item \textbf{ビュー作成}: \texttt{views/warriors/} フォルダを作成し、4つのejsファイルを作成する。
+    \item \textbf{アプリ登録}: \texttt{app.js} に以下を追記する。
+\begin{lstlisting}
+const warriorsRouter = require('./routes/warriors');
+app.use('/warriors', warriorsRouter);
+\end{lstlisting}
+\end{enumerate}
+
+\section{技術スタック要件}
+\begin{itemize}
+    \item \textbf{Runtime}: Node.js (v14以上推奨)
+    \item \textbf{Framework}: Express
+    \item \textbf{Template Engine}: EJS
+    \item \textbf{Body Parser}: Express標準 (\texttt{express.urlencoded}) ※POSTデータ受け取りに必須
+\end{itemize}
+
+\end{document}
