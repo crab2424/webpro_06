@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title><%= data.name %></title>
+        <style>
+            table td:nth-child(2) {
+                text-align: center;
+            }
+        </style>
+    </head>
+    <body>
+        <h2><%= data.name %>の詳細</h2>
+        <table>
+            <tr>
+                <th>項目</th>
+                <th>データ</th>
+            </tr>
+            <tr>
+                <td>ID</td>
+                <td><%= data.id %></td>
+            </tr>
+            <tr>
+                <td>都道府県名</td>
+                <td><%= data.name %></td>
+            </tr>
+            <tr>
+                <td>都道府県番号</td>
+                <td><%= data.code %></td>
+            </tr>
+            <tr>
+                <td>面積</td>
+                <td><%= data.area %>km^2</td>
+            </tr>
+            <tr>
+                <td>人口</td>
+                <td><%= data.population %>人</td>
+            </tr>
+            <tr>
+                <td>県庁所在地</td>
+                <td><%= data.capital %></td>
+            </tr>
+            <tr>
+                <td>地方</td>
+                <td><%= data.region %></td>
+            </tr>
+        </table>
+        <a href="/pref/edit/<%= id %>">編集</a><br>
+        <a href="/pref/delete/<%= id %>">削除</a><br>
+        <a href="/pref">一覧に戻る</a>
+    </body>
+</html>
