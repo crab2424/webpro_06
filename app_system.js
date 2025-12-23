@@ -46,6 +46,13 @@ app.get("/pref/edit/:id", (req, res) => {
     res.render('pref/pref_edit', {id: number, data: detail });
 });
 
+//削除確認フォーム
+app.get("/pref/check/:id", (req, res) => {
+    const number = req.params.id;
+    const detail = prefectures[number];
+    res.render('pref/pref_delete', {id: number, data: detail });
+});
+
 //作成処理
 app.post("/pref", (req, res) => {
     const id = prefectures.length + 1;
