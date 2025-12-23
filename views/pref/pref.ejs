@@ -13,9 +13,9 @@
                 <th>都道府県名</th>
                 <th>都道府県番号</th>
             </tr>
-            <% let id = 0 %> <% for( let row of data ) { %>
+            <% let id = 1 %> <% for( let row of data.slice(1) ) { %>
             <tr>
-                <td><%= id + 1 %></td>
+                <td><%= id %></td>
                 <td><a href="/pref/<%= id %>"><%= row.name %></a></td>
                 <td><%= row.code %></td>
             </tr>
